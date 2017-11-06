@@ -2,7 +2,7 @@ defmodule HmCryptoTest do
   use ExUnit.Case
 
   test "sign and verify with default keypair" do
-    signature = HmCrypto.sign("message")
+    signature = HmCrypto.sign!("message")
 
     assert {:ok, _} = Base.decode64(signature)
 
@@ -15,7 +15,7 @@ defmodule HmCryptoTest do
     private = File.read!("#{:code.priv_dir(:hm_crypto)}/custom_priv.pem")
     digest_type = :md5
 
-    signature = HmCrypto.sign("message", digest_type, private)
+    signature = HmCrypto.sign!("message", digest_type, private)
 
     assert {:ok, _} = Base.decode64(signature)
 

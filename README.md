@@ -1,6 +1,6 @@
 # HmCrypto
 
-**TODO: Add description**
+[![CircleCI](https://circleci.com/gh/heathmont/hm-crypto.svg?style=shield&circle-token=c1b594b3ee6dadc82c44d0c0e6d68db18230e324)](https://circleci.com/gh/heathmont/hm-crypto)
 
 ## Installation
 
@@ -14,8 +14,3 @@ def deps do
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/hm_crypto](https://hexdocs.pm/hm_crypto).
-

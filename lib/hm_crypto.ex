@@ -1,18 +1,27 @@
 defmodule HmCrypto do
-  @moduledoc """
-  Documentation for HmCrypto.
-  """
+  import HmCrypto.PublicKey
 
-  @doc """
-  Hello world.
+  @rsa_digest_types ~w(md5 ripemd160 sha sha224 sha256 sha384 sha512)a
 
-  ## Examples
+  @default_digest_type (
+    digest_type = Application.get_env(:hm_crypto, :digest_type)
+    true = Enum.member?(@rsa_digest_types, digest_type)
+    digest_type
+  )
 
-      iex> HmCrypto.hello
-      :world
+  @default_private_key Application.get_env(:hm_crypto, :private_key).() |> parse_pem
+  @default_public_key Application.get_env(:hm_crypto, :public_key).() |> parse_pem
 
-  """
-  def hello do
-    :world
+  def sign!(message, digest_type \\ @default_digest_type, private_key \\ @default_private_key)
+      when is_binary(message) do
+    :public_key.sign(message, digest_type, parse_pem(private_key))
+    |> Base.encode64
+  end
+
+  def valid?(message, encoded_signature, digest_type \\ @default_digest_type,
+             public_key \\ @default_public_key)
+      when is_binary(message) do
+    {:ok, signature} = Base.decode64(encoded_signature)
+    :public_key.verify(message, digest_type, signature, parse_pem(public_key))
   end
 end

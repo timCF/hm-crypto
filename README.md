@@ -21,8 +21,8 @@ Add default keypair and digest type to `config.exs`:
 ```elixir
 config :hm_crypto,
   digest_type: :sha256,
-  private_key: fn -> File.read!("my_default_priv.pem") end,
-  public_key: fn -> File.read!("my_default_pub.pem") end
+  private_key: File.read!("my_default_priv.pem"),
+  public_key: File.read!("my_default_pub.pem")
 ```
 
 Availiable digest types (see rsa_digest_type() in [docs](http://erlang.org/doc/man/public_key.html)) is md5, ripemd160, sha, sha224, sha256, sha384, sha512.

@@ -9,8 +9,8 @@ defmodule HmCrypto do
     digest_type
   )
 
-  @default_private_key Application.get_env(:hm_crypto, :private_key).() |> parse_pem
-  @default_public_key Application.get_env(:hm_crypto, :public_key).() |> parse_pem
+  @default_private_key Application.get_env(:hm_crypto, :private_key) |> parse_pem
+  @default_public_key Application.get_env(:hm_crypto, :public_key) |> parse_pem
 
   def sign!(message, digest_type \\ @default_digest_type, private_key \\ @default_private_key)
       when is_binary(message) do

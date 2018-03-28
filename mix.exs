@@ -6,6 +6,7 @@ defmodule HmCrypto.Mixfile do
       app: :hm_crypto,
       version: "0.1.0",
       elixir: "~> 1.5",
+      elixirc_paths: elixirc_paths(Mix.env),
       start_permanent: Mix.env == :prod,
       deps: deps()
     ]
@@ -26,4 +27,10 @@ defmodule HmCrypto.Mixfile do
       {:benchfella, "~> 0.3.0", only: [:dev, :test], runtime: false}
     ]
   end
+
+  # Specifies which paths to compile per environment.
+  defp elixirc_paths(:test), do: ["lib", "test/support", "bench/support"]
+  defp elixirc_paths(:dev),  do: ["lib", "bench/support"]
+  defp elixirc_paths(_),     do: ["lib"]
+
 end

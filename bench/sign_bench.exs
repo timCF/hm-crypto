@@ -1,22 +1,24 @@
 defmodule HmCrypto.SignBench do
   use Benchfella
   import HmCrypto.Bench.Helper
-  generate_benchmarks(
-    fn(%HmCrypto.Bench.Helper{payloads: payloads, private_keys: private_keys}) ->
-      HmCrypto.rsa_digest_types
-      |> Enum.reduce(quote do end, fn(digest_type, acc) ->
-          Enum.reduce(private_keys, acc, fn({key_bits_qty, key}, acc) ->
-            Enum.reduce(payloads, acc, fn({payload_bytes_qty, payload}, acc) ->
-              quote do
-                unquote(acc)
-                bench unquote("sign #{digest_type}/#{key_bits_qty}-bits-key/#{payload_bytes_qty}-bytes-payload") do
-                  HmCrypto.sign!(unquote(payload),
-                                 unquote(digest_type),
-                                 unquote(key))
-                end
-              end
-            end)
-          end)
-      end)
+  generate_benchmarks(fn(list = [_ | _]) ->
+    Enum.reduce(list, quote do end, fn(%HmCrypto.Bench.Helper{
+        payload:            payload,
+        signature:          signature,
+        digest_type:        digest_type,
+        private_key:        private_key,
+        key_bits_qty:       key_bits_qty,
+        payload_bytes_qty:  payload_bytes_qty,
+      }, acc) ->
+
+      quote do
+        unquote(acc)
+        bench unquote("sign #{digest_type}/#{key_bits_qty}-bits-key/#{payload_bytes_qty}-bytes-payload") do
+          HmCrypto.sign!(unquote(payload),
+                         unquote(digest_type),
+                         unquote(private_key |> Macro.escape))
+        end
+      end
     end)
+  end)
 end

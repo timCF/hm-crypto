@@ -1,9 +1,16 @@
 defmodule HmCrypto.Bench.Helper do
 
+  @key_bits_qty       [1024, 2048]
+  @payload_bytes_qty  [1, 100, 100000]
+
   defstruct [
-    :payloads,
-    :private_keys,
-    :public_keys,
+    :payload,
+    :signature,
+    :digest_type,
+    :public_key,
+    :private_key,
+    :key_bits_qty,
+    :payload_bytes_qty,
   ]
 
   defmacro generate_benchmarks(quoted_lambda) do
@@ -12,7 +19,7 @@ defmodule HmCrypto.Bench.Helper do
       Code.eval_quoted(quoted_lambda)
 
     payloads =
-      [1, 100, 100000]
+      @payload_bytes_qty
       |> Enum.reduce(%{}, fn(bytes, acc) ->
         Map.put(acc, bytes, :crypto.strong_rand_bytes(bytes))
       end)
@@ -23,21 +30,34 @@ defmodule HmCrypto.Bench.Helper do
     public_keys =
       fetch_keys(".pub")
 
-    lambda.(%__MODULE__{
-      payloads: payloads,
-      private_keys: private_keys,
-      public_keys: public_keys,
-    })
+    HmCrypto.rsa_digest_types
+    |> Enum.flat_map(fn(digest_type) ->
+        private_keys
+        |> Enum.flat_map(fn({key_bits_qty, private_key}) ->
+          payloads
+          |> Enum.map(fn({payload_bytes_qty, payload}) ->
+              %__MODULE__{
+                payload:            payload,
+                signature:          HmCrypto.sign!(payload, digest_type, private_key),
+                digest_type:        digest_type,
+                public_key:         Map.get(public_keys, key_bits_qty),
+                private_key:        private_key,
+                key_bits_qty:       key_bits_qty,
+                payload_bytes_qty:  payload_bytes_qty,
+              }
+          end)
+        end)
+    end)
+    |> lambda.()
   end
 
   defp fetch_keys(postfix) do
-    [1024, 2048]
+    @key_bits_qty
     |> Enum.reduce(%{}, fn(bits, acc) ->
       key =
         "#{:code.priv_dir :hm_crypto}/#{bits}#{postfix}"
         |> File.read!
         |> HmCrypto.PublicKey.parse_pem
-        |> Macro.escape
       Map.put(acc, bits, key)
     end)
   end

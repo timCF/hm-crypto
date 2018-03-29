@@ -12,6 +12,8 @@ defmodule HmCrypto do
   @default_private_key Application.get_env(:hm_crypto, :private_key) |> parse_pem
   @default_public_key Application.get_env(:hm_crypto, :public_key) |> parse_pem
 
+  def rsa_digest_types, do: @rsa_digest_types
+
   def sign!(message, digest_type \\ @default_digest_type, private_key \\ @default_private_key)
       when is_binary(message) do
     :public_key.sign(message, digest_type, parse_pem(private_key))
@@ -27,4 +29,5 @@ defmodule HmCrypto do
       _ -> false
     end
   end
+
 end

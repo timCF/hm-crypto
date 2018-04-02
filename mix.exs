@@ -4,11 +4,41 @@ defmodule HmCrypto.Mixfile do
   def project do
     [
       app: :hm_crypto,
-      version: "0.1.0",
+      version: ("VERSION" |> File.read! |> String.trim),
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env),
       start_permanent: Mix.env == :prod,
-      deps: deps()
+      deps: deps(),
+
+      # excoveralls
+      test_coverage:      [tool: ExCoveralls],
+      preferred_cli_env:  [
+        "coveralls":            :test,
+        "coveralls.travis":     :test,
+        "coveralls.circle":     :test,
+        "coveralls.semaphore":  :test,
+        "coveralls.post":       :test,
+        "coveralls.detail":     :test,
+        "coveralls.html":       :test,
+      ],
+      # dialyxir
+      dialyzer:     [ignore_warnings: ".dialyzer_ignore"],
+      # ex_doc
+      name:         "HmCrypto",
+      source_url:   "https://github.com/heathmont/hm-crypto",
+      homepage_url: "https://github.com/heathmont/hm-crypto",
+      docs:         [main: "readme", extras: ["README.md"]],
+      # hex.pm stuff
+      description:  "Elixir library for signing and validating requests",
+      package: [
+        licenses: ["Apache 2.0"],
+        files: ["lib", "priv", "mix.exs", "README*", "VERSION*"],
+        maintainers: ["tim2CF", "nazipov", "ysemeniuk"],
+        links: %{
+          "GitHub" => "https://github.com/heathmont/hm-crypto",
+        }
+      ],
+
     ]
   end
 
@@ -24,7 +54,12 @@ defmodule HmCrypto.Mixfile do
     [
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
-      {:benchfella, "~> 0.3.0", only: [:dev, :test], runtime: false}
+      {:benchfella, "~> 0.3.0",           only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.8",            only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 0.5",               only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.18",                only: [:dev, :test], runtime: false},
+      {:credo, "~> 0.8",                  only: [:dev, :test], runtime: false},
+      {:boilex, "~> 0.1.6",               only: [:dev, :test], runtime: false},
     ]
   end
 

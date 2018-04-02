@@ -3,30 +3,29 @@ defmodule HmCrypto do
 
   @rsa_digest_types ~w(md5 ripemd160 sha sha224 sha256 sha384 sha512)a
 
-  @default_digest_type (
-    digest_type = Application.get_env(:hm_crypto, :digest_type)
-    true = Enum.member?(@rsa_digest_types, digest_type)
-    digest_type
-  )
-
-  @default_private_key Application.get_env(:hm_crypto, :private_key) |> parse_pem
-  @default_public_key Application.get_env(:hm_crypto, :public_key) |> parse_pem
-
   def rsa_digest_types, do: @rsa_digest_types
 
-  def sign!(message, digest_type \\ @default_digest_type, private_key \\ @default_private_key)
-      when is_binary(message) do
-    :public_key.sign(message, digest_type, parse_pem(private_key))
+  def sign!(message, digest_type, private_key) when
+        is_binary(message) and
+        (digest_type in @rsa_digest_types) do
+
+    message
+    |> :public_key.sign(digest_type, parse_pem(private_key))
     |> Base.encode64
   end
 
-  def valid?(message, encoded_signature, digest_type \\ @default_digest_type,
-             public_key \\ @default_public_key)
-      when is_binary(message) do
-    case Base.decode64(encoded_signature, ignore: :whitespace) do
+  def valid?(message, encoded_signature, digest_type, public_key) when
+        is_binary(message) and
+        is_binary(encoded_signature) and
+        (digest_type in @rsa_digest_types) do
+
+    encoded_signature
+    |> Base.decode64(ignore: :whitespace)
+    |> case do
       {:ok, signature} ->
         :public_key.verify(message, digest_type, signature, parse_pem(public_key))
-      _ -> false
+      _ ->
+        false
     end
   end
 

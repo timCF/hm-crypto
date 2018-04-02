@@ -1,5 +1,6 @@
 defmodule HmCrypto.PublicKeyTest do
   use ExUnit.Case
+  doctest HmCrypto.PublicKey
 
   setup do
     %{

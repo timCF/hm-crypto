@@ -5,7 +5,7 @@ defmodule HmCrypto.Mixfile do
     [
       app: :hm_crypto,
       version: ("VERSION" |> File.read! |> String.trim),
-      elixir: "~> 1.5",
+      elixir: "~> 1.6",
       elixirc_paths: elixirc_paths(Mix.env),
       start_permanent: Mix.env == :prod,
       deps: deps(),
@@ -22,7 +22,7 @@ defmodule HmCrypto.Mixfile do
         "coveralls.html":       :test,
       ],
       # dialyxir
-      dialyzer:     [ignore_warnings: ".dialyzer_ignore"],
+      dialyzer:     [ignore_warnings: ".dialyzer_ignore", plt_add_apps: [:public_key]],
       # ex_doc
       name:         "HmCrypto",
       source_url:   "https://github.com/heathmont/hm-crypto",

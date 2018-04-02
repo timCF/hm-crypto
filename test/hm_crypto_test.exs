@@ -1,5 +1,6 @@
 defmodule HmCryptoTest do
   use ExUnit.Case
+  doctest HmCrypto
 
   setup do
     %{

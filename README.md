@@ -13,7 +13,3 @@ def deps do
   ]
 end
 ```
-
-## Usage
-
-Availiable digest types (see rsa_digest_type() in [docs](http://erlang.org/doc/man/public_key.html)) are :md5, :ripemd160, :sha, :sha224, :sha256, :sha384, :sha512. `HmCrypto.sign!` returns base64 string. `HmCrypto.valid?` returns false if signature is not base64 string.

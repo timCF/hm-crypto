@@ -1,32 +1,79 @@
 defmodule HmCrypto do
   import HmCrypto.PublicKey
-
   @rsa_digest_types ~w(md5 ripemd160 sha sha224 sha256 sha384 sha512)a
 
-  @default_digest_type (
-    digest_type = Application.get_env(:hm_crypto, :digest_type)
-    true = Enum.member?(@rsa_digest_types, digest_type)
-    digest_type
-  )
+  @moduledoc """
 
-  @default_private_key Application.get_env(:hm_crypto, :private_key) |> parse_pem
-  @default_public_key Application.get_env(:hm_crypto, :public_key) |> parse_pem
+  Main functional API of `HmCrypto` application.
+  Provides signing and validation functionality.
+
+  """
+
+  @doc """
+
+  Returns list of availiable digest types.
+
+  ## Examples
+
+    ```
+    iex> HmCrypto.rsa_digest_types
+    [:md5, :ripemd160, :sha, :sha224, :sha256, :sha384, :sha512]
+    ```
+
+  """
 
   def rsa_digest_types, do: @rsa_digest_types
 
-  def sign!(message, digest_type \\ @default_digest_type, private_key \\ @default_private_key)
-      when is_binary(message) do
-    :public_key.sign(message, digest_type, parse_pem(private_key))
+  @doc """
+
+  Generates base64-encoded signature of payload according given
+  digest_type and private_key.
+
+  ## Usage
+
+    ```
+    signature = HmCrypto.sign!(payload, :sha512, priv_key)
+    "XE54doOCtx+z2h9gILOHPKP8+RTnvQVAPUoKpux2PLZUBX2JVIaS3vNewQM6IpxvMzfewWm1H6j+SPbhhGpvcp3MiGo8426KlGoqg6jjuILAQ4jXzYrTa6HFBXhuk+Y34e0Hv1FKwbmVYXvn5RTmgYfI6vzA4spOoG/AMIis6hpnNE5lTsjHU76QtcVWJPfJKk2wDiZI9u2EWLGEq1BJuCfbZYSueNVe2aDqbZ7UANybyZsSHa1oPY6nP+FS5wm3zrKEdMV2PBGi63STg4WabBaaaB6s73GAA0IVogcysVtGKJ8vN17ion5zT6+r62DEHNGNGscjV7HTJd1tNNG9Iw=="
+    ```
+
+  """
+
+  def sign!(payload, digest_type, private_key) when
+        is_binary(payload) and
+        (digest_type in @rsa_digest_types) do
+
+    payload
+    |> :public_key.sign(digest_type, parse_pem(private_key))
     |> Base.encode64
   end
 
-  def valid?(message, encoded_signature, digest_type \\ @default_digest_type,
-             public_key \\ @default_public_key)
-      when is_binary(message) do
-    case Base.decode64(encoded_signature, ignore: :whitespace) do
+  @doc """
+
+  Validates base64-encoded signature according given
+  payload, digest_type and public_key.
+  Returns `true` if signature is valid, else returns `false`.
+
+  ## Usage
+
+    ```
+    HmCrypto.valid?(payload, signature, :sha512, public_key)
+    true
+    ```
+
+  """
+
+  def valid?(payload, encoded_signature, digest_type, public_key) when
+        is_binary(payload) and
+        is_binary(encoded_signature) and
+        (digest_type in @rsa_digest_types) do
+
+    encoded_signature
+    |> Base.decode64(ignore: :whitespace)
+    |> case do
       {:ok, signature} ->
-        :public_key.verify(message, digest_type, signature, parse_pem(public_key))
-      _ -> false
+        :public_key.verify(payload, digest_type, signature, parse_pem(public_key))
+      _ ->
+        false
     end
   end
 

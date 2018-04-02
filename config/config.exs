@@ -27,8 +27,3 @@ use Mix.Config
 # Configuration from the imported file will override the ones defined
 # here (which is why it is important to import them last).
 #
-
-config :hm_crypto,
-  digest_type: :sha256,
-  private_key: Path.dirname(__DIR__) |> Path.join("priv/demo_priv.pem") |> File.read!,
-  public_key: Path.dirname(__DIR__) |> Path.join("priv/demo_pub.pem") |> File.read!

@@ -99,6 +99,10 @@ workflows:
           filters:
             branches:
               only: /^.+$/
+      - doc:
+          filters:
+            branches:
+              only: /^.+$/
   test-doc:
     jobs:
       - test:

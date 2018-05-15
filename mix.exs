@@ -31,6 +31,7 @@ defmodule HmCrypto.Mixfile do
       # hex.pm stuff
       description:  "Elixir library for signing and validating requests",
       package: [
+        organization: "coingaming",
         licenses: ["Apache 2.0"],
         files: ["lib", "priv", "mix.exs", "README*", "VERSION*"],
         maintainers: ["tim2CF", "nazipov", "ysemeniuk"],

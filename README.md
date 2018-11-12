@@ -11,7 +11,7 @@ Elixir library for signing and validating requests
 ```elixir
 def deps do
   [
-    {:hm_crypto, git: "git@github.com:heathmont/hm-crypto.git"}
+    {:hm_crypto, "~> 0.1.3"}
   ]
 end
 ```
